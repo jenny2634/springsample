@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="member">
+	<select id="selectAll" resultType="java.util.Map">
+		SELECT * FROM MEMBER
+	</select>
+	<select id="selectById" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT * FROM MEMBER
+		WHERE ID LIKE CONCAT('%',#{id},'%')
+	</select>
+</mapper>
