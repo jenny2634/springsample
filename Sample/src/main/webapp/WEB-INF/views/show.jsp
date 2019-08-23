@@ -30,7 +30,7 @@ ${totalCount} / ${totalPage}
 <div class="list-group">
   
   <c:forEach items="${list}" var="item">
-  <a href="#" class="list-group-item list-group-item-action">
+  <a href="show/${item.ID}" class="list-group-item list-group-item-action">
    ${item.ID}/${item.TITLE}
   </a>
   </c:forEach>

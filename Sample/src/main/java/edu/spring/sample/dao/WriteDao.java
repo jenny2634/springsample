@@ -19,6 +19,23 @@ public class WriteDao {
 	@Autowired
 	SqlSessionTemplate ss;
 	
+	public int delete(int id) {
+		int result = ss.delete("write.delete", id);
+		return result;
+	}
+	
+	public int update(Map<String,Object> map) {
+		int result = ss.update("write.update",map);
+		return result;
+	}
+	
+	//tdd(test driven development) - 테스트 주도 개발 방법(방식)
+	public Map<String, Object> findById(int id) {
+		//			parameterType="_int"
+		Map<String, Object> map = ss.selectOne("write.select",id);
+		return map;	
+	}
+	
 	public int getTotalCount(){
 		return ss.selectOne("write.totalCount");
 	}

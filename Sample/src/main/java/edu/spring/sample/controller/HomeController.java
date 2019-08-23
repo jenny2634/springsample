@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,24 +35,72 @@ public class HomeController {
 	@Autowired
 	WriteService writeService;
 
+	@RequestMapping(value = "delete/{id}")
+	@ResponseBody
+	public String delete(@PathVariable("id") int id) {
+		int result = writeService.delete(id);
+		return "" + result;
+	}
+
+	// 1 - 2
+	// 양식화면 - 실제 데이터 처리
+	@RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)
+	public String editNum(@PathVariable("id") int id, Model model) {
+		Map<String, Object> map = writeService.findById(id);
+		model.addAttribute("map", map);
+		return "edit";
+	}
+
+	@RequestMapping(value = "/edit/{id}", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> editNumPost(@PathVariable("id") int id, Model model,
+			@RequestParam Map<String, Object> map) {
+		// TODO todo TODO
+		// request param으로 id값을 넘겨받는게 없기 때문에
+		map.put("id", id);
+		int result = writeService.update(map);
+		return map; // json응답
+					// 스프링 외부조립기에 mvc:annotation-driven
+					// message-converter
+		// return "redirect:/show/" + id;
+		// return result + "";
+		// return String.valueOf(result);
+	}
+
+	// pathVariable
+	@RequestMapping(value = "/show/{id}")
+	public String showNum(@PathVariable("id") int id, Model model) {
+		Map<String, Object> map = writeService.findById(id);
+		model.addAttribute("map", map);
+		return "view";
+	}
+
 	@RequestMapping(value = "/show")
-	public String show(Model model, @RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name="search",defaultValue="") String search) {
-		if(page < 1) { 
+	public String show(Model model, @RequestParam(name = "page", defaultValue = "1") int page,
+			@RequestParam(name = "search", defaultValue = "") String search) {
+		if (page < 1) {
 			page = 1;
 		}
-		
+
 		int endRow = page * 10;
 		int startRow = endRow - 9;
 		model.addAttribute("list", writeService.findAll(startRow, search));
 
 		int totalCount = writeService.getTotalCount();
 		model.addAttribute("totalCount", totalCount);
-
-		int totalPage = totalCount / 10 + 1;
+		// 1번
+		int totalPage = (totalCount - 1) / 10 + 1;
+		// 2번
+//		if(totalCount % 10 == 0) {
+//			totalPage -= 1;
+//		}
 		model.addAttribute("totalPage", totalPage);
 
 		int startPage = page / 10 * 10 + 1;
 		int endPage = startPage + 9;
+		if (endPage > totalPage) {
+			endPage = totalPage;
+		}
 		model.addAttribute("startPage", startPage);
 		model.addAttribute("endPage", endPage);
 
@@ -91,6 +140,16 @@ public class HomeController {
 	@ResponseBody
 	public String writePost(@RequestParam Map<String, String> map, MultipartHttpServletRequest mReq) {
 
+		String path = this.getClass().getClassLoader().getResource("").getPath();
+		// System.out.println(path);
+		path = path.substring(0, path.indexOf("WEB-INF"));
+
+		File dir = new File(path + "/resources");
+		// 디렉토리가 없다면 생성
+		if (!dir.isDirectory()) {
+			dir.mkdirs();
+		}
+
 		MultipartFile mFile1 = mReq.getFile("file1");
 		MultipartFile mFile2 = mReq.getFile("file2");
 		String file1 = mFile1.getOriginalFilename();
@@ -111,7 +170,7 @@ public class HomeController {
 			try {
 				// 1.NAS 2.프로젝트내부
 				// 보안(프라이버시) 쉬운접근성
-				mFile1.transferTo(new File("/dev/" + file1));
+				mFile1.transferTo(new File(path + "/resources/" + file1));
 			} catch (IllegalStateException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -133,7 +192,7 @@ public class HomeController {
 			try {
 				// 1.NAS 2.프로젝트내부
 				// 보안(프라이버시) 쉬운접근성
-				mFile2.transferTo(new File("/dev/" + file2));
+				mFile2.transferTo(new File(path + "/resources/" + file2));
 			} catch (IllegalStateException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -13,6 +13,19 @@ public class WriteService {
 	@Autowired
 	WriteDao writeDao;
 	
+	public int delete(int id) {
+		return writeDao.delete(id);
+	}
+	
+	public int update(Map<String,Object> map) {
+		return writeDao.update(map);
+	}
+	
+	public Map<String, Object> findById(int id) {
+		Map<String, Object> map = writeDao.findById(id);
+		return map;
+	}
+	
 	public int getTotalCount() {
 		return writeDao.getTotalCount();
 	}

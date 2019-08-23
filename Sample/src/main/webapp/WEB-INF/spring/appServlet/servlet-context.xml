@@ -70,7 +70,23 @@
 		infrastructure -->
 
 	<!-- Enables the Spring MVC @Controller programming model -->
-	<mvc:annotation-driven />
+	<!-- mvc 네임스페이스 및 스키마 선언 -->
+	<mvc:annotation-driven>
+		<mvc:message-converters>
+			<bean
+				class="org.springframework.http.converter.StringHttpMessageConverter">
+				<property name="supportedMediaTypes">
+					<list>
+						<value>text/html;charset=UTF-8</value>
+					</list>
+				</property>
+			</bean>
+			<bean
+				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+			<bean
+				class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter" />
+		</mvc:message-converters>
+	</mvc:annotation-driven>
 
 	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
 		up static resources in the ${webappRoot}/resources directory -->

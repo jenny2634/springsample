@@ -2,6 +2,29 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="write">
+
+	<delete id="delete" parameterType="_int">
+		DELETE FROM `WRITE`
+		WHERE ID = #{value}
+
+	</delete>
+
+	<!--resultType 불필요 기본값 int -->
+	<update id="update" parameterType="map">
+		UPDATE `WRITE` SET
+		TITLE = #{title}
+		WHERE ID = #{id}
+	</update>
+
+	<!-- DAO -->
+	<!-- 반환될 자료형 넘겨줄 자료형 -->
+	<select id="select" resultType="map" parameterType="_int">
+		SELECT ID,
+		TITLE, FILE1, FILE2
+		FROM `WRITE`
+		WHERE ID = #{value}
+
+	</select>
 	<select id="selectAll" resultType="java.util.Map"
 		parameterType="map">
 		SELECT ID,TITLE,FILE1,FILE2
@@ -11,6 +34,7 @@
 				TITLE LIKE CONCAT('%',#{search},'%')
 			</if>
 		</where>
+		ORDER BY ID DESC
 		LIMIT #{startRow}, 10
 	</select>
 	<select id="totalCount" resultType="java.lang.Integer">
